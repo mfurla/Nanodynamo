@@ -148,6 +148,37 @@ foe <- unlist(simulatedRatesCorrelations(object1=inferedNumericalModel1tp,simObj
 ## Figure S12A
 RatesDistributions(object=inferedNumericalModel1tp,width=25,height=4,obj_name="Sim",xlimTmp=c(-2,6))
 
+### Simpler models - Supplemental Material Figures
+foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataSimulation/FullModel_NoPolysomal/inferedNumericalModel_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k4_3_k5_7.5_k6_45_k8_1.3.rds")
+                    ,simObject=readRDS("/path/to/Results/dataSimulation/FullModel_NoPolysomal/simulatedDataset_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k4_3_k5_7.5_k6_45_k8_1.3.rds")
+                    ,width=7,height=12,name="FullModel_NoPolysomal",lowSat=0.025,upSat=0.975))
+round(c(min(foe),max(foe),median(foe)),2)
+# [1] 0.86 0.95 0.90
+foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataSimulation/NoNucleoplasmicPremature/inferedNumericalModel_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k6_45_k7_0.65_k8_1.3_k10_1.3.rds")
+                    ,simObject=readRDS("/path/to/Results/dataSimulation/NoNucleoplasmicPremature/simulatedDataset_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k6_45_k7_0.65_k8_1.3_k10_1.3.rds")
+                    ,width=7,height=12,name="NoNucleoplasmicPremature",lowSat=0.025,upSat=0.975))
+round(c(min(foe),max(foe),median(foe)),2)
+# [1] 0.63 0.94 0.90
+foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataSimulation/NoNucleoplasmicPremature_NoPolysomal/inferedNumericalModel_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k6_45_k8_1.3.rds")
+                    ,simObject=readRDS("/path/to/Results/dataSimulation/NoNucleoplasmicPremature_NoPolysomal/simulatedDataset_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k2_30_k3_30_k6_45_k8_1.3.rds")
+                    ,width=7,height=12,name="NoNucleoplasmicPremature_NoPolysomal",lowSat=0.025,upSat=0.975))
+round(c(min(foe),max(foe),median(foe)),2)
+# [1] 0.92 0.96 0.95
+foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataSimulation/NoPremature/inferedNumericalModel_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k3_30_k6_45_k7_0.65_k8_1.3_k10_1.3.rds")
+                    ,simObject=readRDS("/path/to/Results/dataSimulation/NoPremature/simulatedDataset_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k3_30_k6_45_k7_0.65_k8_1.3_k10_1.3.rds")
+                    ,width=7,height=12,name="NoP",lowSat=0.025,upSat=0.975))
+round(c(min(foe),max(foe),median(foe)),2)
+# [1] 0.60 0.93 0.84
+foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataSimulation/NoPremature_NoPolysomal/inferedNumericalModel_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k3_30_k6_45_k8_1.3.rds")
+                    ,simObject=readRDS("/path/to/Results/dataSimulation/NoPremature_NoPolysomal/simulatedDataset_Noise_TRUE_Reps_1_CV_0.35_TauFractions_0_0.33_TauPoly_0_0.33_TauTotal__k1_12_k3_30_k6_45_k8_1.3.rds")
+                    ,width=7,height=12,name="NoPremature_NoPolysomal",lowSat=0.025,upSat=0.975))
+round(c(min(foe),max(foe),median(foe)),2)
+# [1] 0.90 0.95 0.93
+
+
+
+
+
 # R version 4.2.1 (2022-06-23)
 # Platform: x86_64-conda-linux-gnu (64-bit)
 # Running under: Rocky Linux 8.7 (Green Obsidian)
