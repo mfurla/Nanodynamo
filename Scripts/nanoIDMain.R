@@ -1,5 +1,5 @@
 ### Expression data
-expressionLevelsUntreated <- readRDS("/path/to/expressionLevelsMerged_Untreated.rds")
+expressionLevelsUntreated <- readRDS("/path/to/Results/Untreated/expressionLevelsMerged.rds")
 
 ### Data aggregation
 mergedExpressionLevelsUntreated <- sapply(c("chromatin"
