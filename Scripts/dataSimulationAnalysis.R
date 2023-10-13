@@ -175,10 +175,6 @@ foe <- unlist(simulatedRatesCorrelations(object1=readRDS("/path/to/Results/dataS
 round(c(min(foe),max(foe),median(foe)),2)
 # [1] 0.90 0.95 0.93
 
-
-
-
-
 # R version 4.2.1 (2022-06-23)
 # Platform: x86_64-conda-linux-gnu (64-bit)
 # Running under: Rocky Linux 8.7 (Green Obsidian)
