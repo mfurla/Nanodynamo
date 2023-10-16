@@ -219,4 +219,3 @@ pheatmap(cor(log10(cbind(Chp_Np_P=inferedRatesUntreatedMerged_YesChpNpP$inferedR
 	   ,cluster_cols=FALSE
 	   ,main="detachment"
 	   ,legend_labels="Spearman correlation")
-

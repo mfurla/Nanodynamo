@@ -2767,7 +2767,7 @@ DifferentialHeatmapsPlot <- function(refObject
   return(ord2)
 }
 
-GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bottom=NULL,obj_name,cgFeatures=NULL,entropyFeatures=NULL,width=8,height=6,ids=LETTERS){
+GenesCharacterization <- function(txdb,clustering=NULL,sortedRates=NULL,top=NULL,bottom=NULL,obj_name,cgFeatures=NULL,entropyFeatures=NULL,width=8,height=6,ids=LETTERS){
 
    require("TxDb.Hsapiens.UCSC.hg38.knownGene")
    txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
@@ -2804,17 +2804,18 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
    utr5max <- sapply(split(utr5,names(utr5)),max)
    utr5 <- sapply(split(utr5,names(utr5)),median)
 
-   if(is.matrix(sortedRatesWT)){
+   if(is.matrix(sortedRates))
+   {
 
     #Genes characterization of genes with fastest and slowest dynamics
 
-    ratesNames <- c(rep(unlist(lapply(colnames(sortedRatesWT),function(i){rep(i,top)})),2),
-                        unlist(lapply(colnames(sortedRatesWT),function(i){rep(i,nrow(sortedRatesWT))})))
-    df <- data.frame(cbind("Rank"=c(rep("TOP",top*ncol(sortedRatesWT)),rep("BOT",bot*ncol(sortedRatesWT)),rep("ALL",nrow(sortedRatesWT)*9)),
+    ratesNames <- c(rep(unlist(lapply(colnames(sortedRates),function(i){rep(i,top)})),2),
+                        unlist(lapply(colnames(sortedRates),function(i){rep(i,nrow(sortedRates))})))
+    df <- data.frame(cbind("Rank"=c(rep("TOP",top*ncol(sortedRates)),rep("BOT",bot*ncol(sortedRates)),rep("ALL",nrow(sortedRates)*9)),
                            "Rate"=ratesNames,
-                           "Genes"=c(matrix(sortedRatesWT[1:top,],ncol=1),
-                                     matrix(sortedRatesWT[(nrow(sortedRatesWT)-bot+1):nrow(sortedRatesWT),],ncol=1),
-                                     matrix(sortedRatesWT,ncol=1))))
+                           "Genes"=c(matrix(sortedRates[1:top,],ncol=1),
+                                     matrix(sortedRates[(nrow(sortedRates)-bot+1):nrow(sortedRates),],ncol=1),
+                                     matrix(sortedRates,ncol=1))))
 
     pdf(file=paste0("StructuralFeatures_TopBot",obj_name,".pdf"),width=width,height=height)
     if(!is.null(cgFeatures)|!is.null(entropyFeatures)){par(mfrow=c(3,4))}else{par(mfrow=c(2,4))}
@@ -2832,7 +2833,7 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
     df$entropy_3UTR <- entropyFeatures[[1]][df$Genes]
     df$entropy_5UTR <- entropyFeatures[[2]][df$Genes]
 
-    df$Rate <- factor(df$Rate, levels=colnames(sortedRatesWT))
+    df$Rate <- factor(df$Rate, levels=colnames(sortedRates))
     df$Rank <- factor(df$Rank, levels=c("ALL","TOP","BOT",""))
 
     Wtest <- lapply(colnames(df)[4:15],function(j){
@@ -2849,7 +2850,7 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
     })
     names(Wtest) <- colnames(df)[4:15]
 
-    MatCol <- matrix("grey",nrow=4*ncol(sortedRatesWT),ncol=12)
+    MatCol <- matrix("grey",nrow=4*ncol(sortedRates),ncol=12)
     rownames(MatCol) <- sapply(c(paste0("k",1:8),"k10"),function(i)paste0(i,".",c("all","top","bot","")))
     colnames(MatCol) <- names(Wtest)
     for(i in names(Wtest)){
@@ -2857,7 +2858,6 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
       MatCol[names(Wtest[[i]]),i] <- c("blue","red")[(Wtest[[i]]<1e-5)+1]
     }
 
-   
     boxplot(utr5~Rank+Rate,data=df,outline=FALSE,las=2,ylab="[kbs]",main="Median Length\n5' UTR",varwidth=FALSE,col=MatCol[,"utr5"],xlab=NULL,cex.axis = 0.8)
 
     boxplot(utr5max~Rank+Rate,data=df,outline=FALSE,las=2,ylab="[kbs]",main="Max Length\n5' UTR",varwidth=FALSE,col=MatCol[,"utr5max"],xlab=NULL,cex.axis = 0.8)
@@ -2887,7 +2887,6 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
      }
 
      dev.off()
-
 
    }else{
 
@@ -2921,7 +2920,6 @@ GenesCharacterization <- function(txdb,clustering,sortedRatesWT=NULL,top=NULL,bo
      dev.off()
    }
  }
- 
 
 TailsCharacterization <- function(txdb,clustering=NULL,obj_name,bam_untreated=NULL,bam_treated,tailsPaths_untreatetd=NULL,
                                   tailsPaths_treated,minoverlap_I,minoverlap_E,mergeReplicates,width,height)
