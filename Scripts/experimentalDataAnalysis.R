@@ -13,7 +13,7 @@ library("org.Hs.eg.db")
 library("biomaRt")
 
 source("/path/to/allInternalFunctions.R")
-
+# source("/path/to/allInternalFunctionsPatch_nucleoplasmicPrematureExport.R") # Execute this line to model Nucleoplasmic Premature RNA export; available for the Full Model only.
 ### BAMs_treat
 bamPaths_treat <- c(Chr_treat1="/path/to/bam.RData"
 				   ,Nuc_treat1="/path/to/bam.RData"

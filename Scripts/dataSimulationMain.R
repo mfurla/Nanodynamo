@@ -29,7 +29,7 @@ library(deSolve)
 library(pheatmap)
 
 source("/path/to/allInternalFunctions.R")
-
+# source("path/to/allInternalFunctionsPatch_nuclearPrematureDecay.R") # Execute this line to simulate data with Nucleoplasmic Premature RNA degradation.
 ### Average gene
 INSPEcT_nascent <- read.table("/path/to/regulated_genes_features.xls",sep="\t",header=TRUE)
 
