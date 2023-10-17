@@ -3,6 +3,8 @@
 
 This repository contains files and scripts required to reproduce the analyses presented in the manuscript.
 
+The _condaEnvironment.yml_ file allows to reproduce the Anaconda environment used for our analyses.
+
 In the _Scripts_ folder we have collected:
 
 - A Julia script used to evaluate parameters identifiability (parametersIdentifiability.ipynb),
