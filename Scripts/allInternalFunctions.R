@@ -2811,10 +2811,10 @@ GenesCharacterization <- function(txdb,clustering=NULL,sortedRates=NULL,top=NULL
 
     ratesNames <- c(rep(unlist(lapply(colnames(sortedRates),function(i){rep(i,top)})),2),
                         unlist(lapply(colnames(sortedRates),function(i){rep(i,nrow(sortedRates))})))
-    df <- data.frame(cbind("Rank"=c(rep("TOP",top*ncol(sortedRates)),rep("BOT",bot*ncol(sortedRates)),rep("ALL",nrow(sortedRates)*9)),
+    df <- data.frame(cbind("Rank"=c(rep("TOP",top*ncol(sortedRates)),rep("BOT",bottom*ncol(sortedRates)),rep("ALL",nrow(sortedRates)*9)),
                            "Rate"=ratesNames,
                            "Genes"=c(matrix(sortedRates[1:top,],ncol=1),
-                                     matrix(sortedRates[(nrow(sortedRates)-bot+1):nrow(sortedRates),],ncol=1),
+                                     matrix(sortedRates[(nrow(sortedRates)-bottom+1):nrow(sortedRates),],ncol=1),
                                      matrix(sortedRates,ncol=1))))
 
     pdf(file=paste0("StructuralFeatures_TopBot",obj_name,".pdf"),width=width,height=height)
