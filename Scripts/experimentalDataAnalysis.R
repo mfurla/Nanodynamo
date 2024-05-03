@@ -1,19 +1,7 @@
 ### Libraries
-library("GenomicAlignments")
-require("TxDb.Hsapiens.UCSC.hg38.knownGene")
-txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
-library("dplyr")
-library("deSolve")
-library("parallel")
-library("ggplot2")
-library("gridExtra")
-library("pheatmap")
-library("clusterProfiler")
-library("org.Hs.eg.db")
-library("biomaRt")
-
 source("/path/to/allInternalFunctions.R")
 # source("/path/to/allInternalFunctionsPatch_nucleoplasmicPrematureExport.R") # Execute this line to model Nucleoplasmic Premature RNA export; available for the Full Model only.
+
 ### BAMs_treat
 bamPaths_treat <- c(Chr_treat1="/path/to/bam.RData"
 				   ,Nuc_treat1="/path/to/bam.RData"
@@ -48,116 +36,89 @@ fastqs_treat <-  c(Chr_treat1="/path/to/FASTQ_DNA.fastq"
 				  )
 
 ### Normalization data
-## Number of reads
-nr_treat = c()
-for(i in 1:length(fastqs_treat)){nr_treat[i] <- system(command = paste0("cat ", fastqs_treat[i], " | /path/to/miniconda3/bin/seqtk seq -A - | grep \"^>\" | wc -l"), intern = TRUE)}
-nr_treat <- as.numeric(nr_treat)
-
-## Cells and RNA
-tbl_treat <- matrix(0,nrow=length(bamPaths_treat),ncol=3)
-rownames(tbl_treat) <- names(fastqs_treat)
-colnames(tbl_treat) <- c("cells","PolyA","reads")
-tbl_treat[,3] <- nr_treat
-tbl_treat[,2] <- # Amount of polyA RNA. Example for Untreated condition: c(247.5,268.6,302.5,1298.5,684,1600,1134.2,516)
-tbl_treat[,1] <- c(16,16,16,29,21,21,21,13)
-
-### Experimental design
-expDesign <- c(Chr_treat1="chr"
-			  ,Nuc_treat1="nuc"
-			  ,Cyt_treat1="cyt"
-			  ,Poly_treat1="poly"
-			  ,Chr_treat2="chr"
-			  ,Nuc_treat2="nuc"
-			  ,Cyt_treat2="cyt"
-			  ,Poly_treat2="poly"
-)
+tbl_treat <- cbind("cells"=# Number of cells, example for the Untreated condition: c(3,3,3,2.8,2.8,2.8,29,13)
+			   ,"PolyA"=# Amount of polyA RNA, example for the Untreated condition: c(128.4,122,335,109.2,88.48,308,1298.5,516)
+			   )
+rownames(tbl_treat) <- # Experimental design for yield estimation, example for the Untreated condition: c("Chr_WTA","Nuc_WTA","Cyt_WTA","Chr_WTB","Nuc_WTB","Cyt_WTB","Poly_WTC","Poly_WTD")
 
 ### Expression data
-## Mean of replicates
 expressionLevels <- expressionDataEstimation(bamPaths=bamPaths_treat
 											,nascentPaths=nascentPaths_treat
-											,expDesign=expDesign
 											,tbl=tbl_treat
 											,labelingTime=0.33
 											,labelingTimePoly=0.33
 											,txdb=txdb
-											,countsTh=TRUE
-											,cytPTh=NULL
 											,minoverlap_I=10
 											,minoverlap_E=10
-											,spikeInsConcentrations=NULL
-											,yeastCounts=c(Chr_treat1=127234,Nuc_treat1=54340,Cyt_treat1=73272) # This is required only for the Sample 1 of the Untreated condition because it was aligned to the human genome without ENO2, for all the other samples these data are inferred from the bam; set to NULL.
-											,mergeSamples=FALSE)
-
-## Merge of replicates
-expressionLevelsMerged <- expressionDataEstimation(bamPaths=bamPaths_treat
-												  ,nascentPaths=nascentPaths_treat
-												  ,expDesign=expDesign
-												  ,tbl=tbl_treat
-												  ,labelingTime=0.33
-												  ,labelingTimePoly=0.33
-												  ,txdb=txdb
-												  ,countsTh=TRUE
-												  ,cytPTh=NULL
-												  ,minoverlap_I=10
-												  ,minoverlap_E=10
-												  ,spikeInsConcentrations=NULL
-												  ,yeastCounts=c(Chr_treat1=127234,Nuc_treat1=54340,Cyt_treat1=73272) # This is required only for the Sample 1 of the Untreated condition because it was aligned to the human genome without ENO2, for all the other samples these data are inferred from the bam; set to NULL.
-												  ,mergeSamples=TRUE)
+											,saveDataDistributions=FALSE
+											,cpus=1)
 
 ### Single initial condition modeling
 initialRates <- list(c(k1=1,k2=1,k3=1,k4=1,k5=1,k6=1,k7=1,k8=1,k10=1))
 
-inferedRatestreat1_yesChpNpP_single <- inferRates(expressionData=expressionLevels$normalizedCountsYesChpNpP[["Sample_treat1"]] # Expression data of the genes to be modeled.
-												 ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-												 ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-												 ,initialRates=initialRates # List of initial rates for optimization.
-												 ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-												 ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-												 ,TauTotal=NULL # Time points with total RNA profiling.
-												 ,cpus=24 # Number of cpus.
-												 ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-												 ,lowB=1e-6 # Lower boundary for the rates.
-												 ,upB=1e6 # Upper boundary for the rates.
-												 ,FlagDev="FC" # Cost function.
-												 ,lambda=0.05 # Regularization strength.
-												 ,excludeSpecies=NULL # List of species to be excluded from the cost function.
-												 ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+inferedRatesTreatMerged_YesChpNpP_single <- inferRates(expressionData=list(expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT1$mean
+																	  ,expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT2$mean) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreatMerged_YesChpNpP_single,"inferedRatesTreatMerged_YesChpNpP_single.rds")
 
-inferedRatestreat2_yesChpNpP_single <- inferRates(expressionData=expressionLevels$normalizedCountsYesChpNpP[["Sample_treat2"]] # Expression data of the genes to be modeled.
-												 ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-												 ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-												 ,initialRates=initialRates # List of initial rates for optimization.
-												 ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-												 ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-												 ,TauTotal=NULL # Time points with total RNA profiling.
-												 ,cpus=24 # Number of cpus.
-												 ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-												 ,lowB=1e-6 # Lower boundary for the rates.
-												 ,upB=1e6 # Upper boundary for the rates.
-												 ,FlagDev="FC" # Cost function.
-												 ,lambda=0.05 # Regularization strength.
-												 ,excludeSpecies=NULL # List of species to be excluded from the cost function.
-												 ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+# Genes sub-sampling based on replicate 1
+expressionDataListUntreated1 <- expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT1$mean
+expressionDataListUntreated1 <- expressionDataListUntreated1[apply(expressionDataListUntreated1[,!grepl("n0$",colnames(expressionDataListUntreated1))]>1e-10,1,all),]
 
-inferedRatestreatMerged_yesChpNpP_single <- inferRates(expressionData=expressionLevelsMerged$normalizedCountsYesChpNpP[["Sample_Merged"]] # Expression data of the genes to be modeled.
-													  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-													  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-													  ,initialRates=initialRates # List of initial rates for optimization.
-													  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-													  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-													  ,TauTotal=NULL # Time points with total RNA profiling.
-													  ,cpus=24 # Number of cpus.
-													  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-													  ,lowB=1e-6 # Lower boundary for the rates.
-													  ,upB=1e6 # Upper boundary for the rates.
-													  ,FlagDev="FC" # Cost function.
-													  ,lambda=0.05 # Regularization strength.
-													  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
-													  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+inferedRatesTreat1_YesChpNpP_single <- inferRates(expressionData=list(expressionDataListUntreated1) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreat1_YesChpNpP_single,"inferedRatesTreat1_YesChpNpP_single.rds")
+
+# Genes sub-sampling based on replicate 2
+expressionDataListUntreated2 <- expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT2$mean
+expressionDataListUntreated2 <- expressionDataListUntreated2[apply(expressionDataListUntreated2[,!grepl("n0$",colnames(expressionDataListUntreated2))]>1e-10,1,all),]
+
+inferedRatesTreat2_YesChpNpP_single <- inferRates(expressionData=list(expressionDataListUntreated2) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreat2_YesChpNpP_single,"inferedRatesTreat2_YesChpNpP_single.rds")
 
 ### Multiple initial condition modeling
-INSPEcT_nascent <- read.table("/path/to/regulated_genes_features.xls",sep="\t",header=TRUE)
+## Initial rates
+INSPEcT_nascent <- read.table("/path/to/Files/regulated_genes_features.xls",sep="\t",header=TRUE)
 
 synthesis=signif(median(INSPEcT_nascent[,"synthesis_0"]),2)
 processing=signif(median(INSPEcT_nascent[,"processing_0"]),2)
@@ -177,50 +138,62 @@ initialRates <- list(10**ceiling(log10(exampleRates))*(1+seq_along(exampleRates)
                     ,10**round(log10(exampleRates))*(1+seq_along(exampleRates)*1e-5)
                     ,10**floor(log10(exampleRates))*(1+seq_along(exampleRates)*1e-5))
 
-inferedRatestreat1_yesChpNpP_multi <- inferRates(expressionData=expressionLevels$normalizedCountsYesChpNpP[["Sample_treat1"]] # Expression data of the genes to be modeled.
-												,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-												,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-												,initialRates=initialRates # List of initial rates for optimization.
-												,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-												,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-												,TauTotal=NULL # Time points with total RNA profiling.
-												,cpus=24 # Number of cpus.
-												,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-												,lowB=1e-6 # Lower boundary for the rates.
-												,upB=1e6 # Upper boundary for the rates.
-												,FlagDev="FC" # Cost function.
-												,lambda=0.05 # Regularization strength.
-												,excludeSpecies=NULL # List of species to be excluded from the cost function.
-												,parFixed=NULL) # List of parameters to be excluded from the optimization.
+inferedRatesTreatMerged_YesChpNpP_multi <- inferRates(expressionData=list(expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT1$mean
+																		 ,expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT2$mean) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreatMerged_YesChpNpP_multi,"inferedRatesTreatMerged_YesChpNpP_multi.rds")
 
-inferedRatestreat2_yesChpNpP_multi <- inferRates(expressionData=expressionLevels$normalizedCountsYesChpNpP[["Sample_treat2"]] # Expression data of the genes to be modeled.
-												,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-												,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-												,initialRates=initialRates # List of initial rates for optimization.
-												,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-												,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-												,TauTotal=NULL # Time points with total RNA profiling.
-												,cpus=24 # Number of cpus.
-												,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-												,lowB=1e-6 # Lower boundary for the rates.
-												,upB=1e6 # Upper boundary for the rates.
-												,FlagDev="FC" # Cost function.
-												,lambda=0.05 # Regularization strength.
-												,excludeSpecies=NULL # List of species to be excluded from the cost function.
-												,parFixed=NULL) # List of parameters to be excluded from the optimization.
+# Genes sub-sampling based on replicate 1
+expressionDataListUntreated1 <- expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT1$mean
+expressionDataListUntreated1 <- expressionDataListUntreated1[apply(expressionDataListUntreated1[,!grepl("n0$",colnames(expressionDataListUntreated1))]>1e-10,1,all),]
 
-inferedRatestreatMerged_yesChpNpP_multi <- inferRates(expressionData=expressionLevelsMerged$normalizedCountsYesChpNpP[["Sample_Merged"]] # Expression data of the genes to be modeled.
-													 ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
-													 ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
-													 ,initialRates=initialRates # List of initial rates for optimization.
-													 ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
-													 ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
-													 ,TauTotal=NULL # Time points with total RNA profiling.
-													 ,cpus=24 # Number of cpus.
-													 ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
-													 ,lowB=1e-6 # Lower boundary for the rates.
-													 ,upB=1e6 # Upper boundary for the rates.
-													 ,FlagDev="FC" # Cost function.
-													 ,lambda=0.05 # Regularization strength.
-													 ,excludeSpecies=NULL # List of species to be excluded from the cost function.
-													 ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+inferedRatesTreat1_YesChpNpP_multi <- inferRates(expressionData=list(expressionDataListUntreated1) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreat1_YesChpNpP_multi,"inferedRatesTreat1_YesChpNpP_multi.rds")
+
+# Genes sub-sampling based on replicate 2
+expressionDataListUntreated2 <- expressionLevels$normalizedCountsStatisticsSplitted$normalizedCountsTmpYesChpNpP$WT2$mean
+expressionDataListUntreated2 <- expressionDataListUntreated2[apply(expressionDataListUntreated2[,!grepl("n0$",colnames(expressionDataListUntreated2))]>1e-10,1,all),]
+
+inferedRatesTreat2_YesChpNpP_multi <- inferRates(expressionData=list(expressionDataListUntreated2) # Expression data of the genes to be modeled.
+												  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
+												  ,simulatedDataset=NULL # Simulated dataset if this is the case (just to produce real rates correlations).
+												  ,initialRates=initialRates # List of initial rates for optimization.
+												  ,TauFractions=c(0,0.33) # Time points with cellular fractionation.
+												  ,TauPoly=c(0,0.33) # Time points with polysomal profiling.
+												  ,TauTotal=NULL # Time points with total RNA profiling.
+												  ,cpus=24 # Number of cpus.
+												  ,logOptim=TRUE # TRUE to optimize the model parameters in the Log space.
+												  ,lowB=1e-6 # Lower boundary for the rates.
+												  ,upB=1e10 # Upper boundary for the rates.
+												  ,FlagDev="FC" # Cost function.
+												  ,lambda=0.05 # Regularization strength.
+												  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
+												  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
+saveRDS(inferedRatesTreat2_YesChpNpP_multi,"inferedRatesTreat2_YesChpNpP_multi.rds")

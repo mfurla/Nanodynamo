@@ -96,7 +96,7 @@ trainReads <- c(trainReads$train_reads_unlabeled,trainReads$train_reads_labeled)
 
 ### Unlabeled
 ## Classifications
-load("/path/to/nanoID.modification.probabilities.unlabeled.RData")
+load("/path/to/Files/nanoID.modification.probabilities.unlabeled.RData")
 modificationProbabilitiesUnlabeled <- probabilities4sU0h
 rm(probabilities4sU0h)
 
@@ -112,7 +112,7 @@ unlabeled_reads_results <- perGeneAccuracy(trainBamU=bamUnlabeled # Unlabeled tr
 
 ### Fully-labeled
 ## Classification
-load("/path/to/nanoID.modification.probabilities.labeled.RData")
+load("/path/to/Files/nanoID.modification.probabilities.labeled.RData")
 modificationProbabilitiesLabeled <- probabilities4sU24h
 rm(probabilities4sU24h)
 
@@ -126,9 +126,7 @@ labeled_reads_results <- perGeneAccuracy(trainBamU=bamUnlabeled # Unlabeled trai
 										,trainReads=trainReads # Reads used for training
 										,title=NULL) # Plot title
 
-### Plot - Figure S1
-pdf("geneLevelAccuracy.pdf",width=4,height=4)
+### Plot - Figure S2
 boxplot(list("Unlabeled"=unlabeled_reads_results[[1]][,"acc"]
 			,"Labeled"=labeled_reads_results[[1]][,"acc"])
 	   ,ylab="Accuracy",main="Gene level",ylim=c(0,1),las=1)
-dev.off()

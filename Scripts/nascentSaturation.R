@@ -35,9 +35,35 @@ averagePlotFunction <- function(simulatedDataset,LOG=FALSE,abline=NULL)
 	legend("bottomright",col=c(1:6,"grey"),lwd=2,lty=c(rep(1,6),2),legend=c("Chp","Chm","Np","Nm","C","P","20 min."),bty="n")
 }
 
+### Time points
+timePoints <- round(c(0,1,2,3,4,5,10,15,20,25,30,45,60,90,120)/60,2)
+
+### CVs (set to 0)
+CVspecies = readRDS("/path/to/Files/CVs.rds")
+
+## Add CVs for additional time points (1h and 2h)
+CVspecies = lapply(CVspecies,function(i)
+{
+	addTmp <- lapply(timePoints,function(j)
+	{
+		i[grep("0.33",names(i))]	
+	})
+
+	addTmp <- lapply(seq_along(addTmp),function(j)
+	{
+  		outTmp <- addTmp[[j]]
+  		names(outTmp) <- gsub("0.33",timePoints[[j]],names(outTmp))
+  		outTmp
+	})
+
+  outTmp <- c(i,unlist(addTmp))
+  outTmp[outTmp!=0] <- 0
+  outTmp[unique(names(outTmp))]
+})
+
 ### Average gene
 ## Data from the supplemental material of de Pretis et al. Genome Research 2017
-INSPEcT_nascent <- read.table("/path/to/regulated_genes_features.xls",sep="\t",header=TRUE)
+INSPEcT_nascent <- read.table("/path/to/Files/regulated_genes_features.xls",sep="\t",header=TRUE)
 
 ## Steady state rates
 synthesis = signif(median(INSPEcT_nascent[,"synthesis_0"]),2)
@@ -57,18 +83,17 @@ exampleRates <- c(k1 = synthesis # Synthesis
 
 ### Data simulation
 simulatedDataset <- simulateData(exampleRates = exampleRates # Mean rates to sample.
-								,TauFractions = c(0,1,2,3,4,5,10,15,20,25,30,45,60,90,120)/60 # Time points with cellular fractionation.
-								,TauPoly = c(0,1,2,3,4,5,10,15,20,25,30,45,60,90,120)/60 # Time points with polysomal profiling.
+								,TauFractions = timePoints # Time points with cellular fractionation.
+								,TauPoly = timePoints # Time points with polysomal profiling.
 								,TauTotal = NULL # Time points with total RNA profiling (FIXED to null for our purposes).
 								,noise = TRUE # TRUE to add noise to data.
-								,CV = 0 # Variation Coefficient for noise.
+								,CVs = CVspecies # Variation Coefficient for noise.
 								,Reps = 1 # Number of replicates.
 								,nGenes = 1000 # Number of genes to be simulated.
 								,seed = 1 # Seed for reproducibility.
 								,ZeroThresh = 1e-10 # Minimum expression value.
-								,MultFact = 2000) # Number of nGenes to be modeled.
+								,MultFact = 1e5) # Number of nGenes to be modeled.
 
 ### Plot - Figure S3
-pdf("nascentRnaSaturation.pdf",width=4,height=4)
 averagePlotFunction(simulatedDataset,LOG=FALSE,abline=c(20/60))
-dev.off()
+
