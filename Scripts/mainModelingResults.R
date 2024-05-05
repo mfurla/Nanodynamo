@@ -122,14 +122,14 @@ inferedRatesPlaBMerged_yesChpNpP_multi <- readRDS("/path/to/Results/Pladienolide
 inferedRatesPlaBMerged_nucleoplasmicPrematureExport <- readRDS("/path/to/Results/PladienolideB/SecondRun_NucleoplasmicPrematureExport/inferedRatesPlaBMerged_YesChpNpP_multi.rds")
 
 ## HAR
-inferedRatesHAR1_yesChpNpNoP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesHAR1_YesChpNpNoP_multi.rds")
-inferedRatesHAR2_yesChpNpNoP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesHAR2_YesChpNpNoP_multi.rds")
-inferedRatesHARMerged_yesChpNpNoP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesHARMerged_YesChpNpNoP_multi.rds")
+inferedRatesHAR1_yesChpNpNoP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesHAR1_YesChpNpNoP_multi.rds")
+inferedRatesHAR2_yesChpNpNoP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesHAR2_YesChpNpNoP_multi.rds")
+inferedRatesHARMerged_yesChpNpNoP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesHARMerged_YesChpNpNoP_multi.rds")
 
 ## LepB
-inferedRatesLEP1_yesChpNpP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesLepB1_YesChpNpP_multi.rds")
-inferedRatesLEP2_yesChpNpP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesLepB2_YesChpNpP_multi.rds")
-inferedRatesLEPMerged_yesChpNpP_multi <- readRDS("/path/to/Results/Harringtonine/FirstRun_FullModel/inferedRatesLepBMerged_YesChpNpP_multi.rds")
+inferedRatesLEP1_yesChpNpP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesLepB1_YesChpNpP_multi.rds")
+inferedRatesLEP2_yesChpNpP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesLepB2_YesChpNpP_multi.rds")
+inferedRatesLEPMerged_yesChpNpP_multi <- readRDS("/path/to/Results/LeptomycinB/FirstRun_FullModel/inferedRatesLepBMerged_YesChpNpP_multi.rds")
 
 ### Replicates
 ## Expression levels - Figures S7, S18, S23, S28
@@ -642,7 +642,7 @@ entropyUtr3 <- entropyFunction("/path/to/Files/utr3.fa")
 cgUtr5 <- cgContentFunction("/path/to/Files/utr5.fa")
 entropyUtr5 <- entropyFunction("/path/to/Files/utr5.fa")
 
-## Figure S14, S26
+## Figure S14
 GenesCharacterization(txdb,HeatmapsPlotUntreated,obj_name="Untreated",cgFeatures=list(cgUtr3,cgUtr5),entropyFeatures=list(entropyUtr3,entropyUtr5),width=12)
 GenesCharacterization(txdb,HeatmapsPlotPlaB,obj_name="PlaB",cgFeatures=list(cgUtr3,cgUtr5),entropyFeatures=list(entropyUtr3,entropyUtr5),width=12)
 GenesCharacterization(txdb,DifferentialHeatmapsPlotPlaB,obj_name="PlaB_DIFF",cgFeatures=list(cgUtr3,cgUtr5),entropyFeatures=list(entropyUtr3,entropyUtr5),width=12)
@@ -717,6 +717,21 @@ significanceMatrix <- significanceMatrix[,sort(colnames(significanceMatrix))]
 
 corMatrixFinal <- corMatrix
 corMatrixFinal[significanceMatrix>0.01] <- NaN
+
+### k6 modulated genes sequence features - Figure S26
+regulated <- c(OurGenesHighDown,OurGenesHighUp)
+OurGenesNeutral <- inferedRatesLEPMerged_yesChpNpP_multi$inferedRates[rownames(inferedRatesLEPMerged_yesChpNpP_multi$inferedRates)%in%setdiff(rownames(inferedRatesLEPMerged_yesChpNpP_multi$inferedRates),regulated),]
+ 
+neutral <- cbind("Not-regulated",OurGenesNeutral[,"k6"])
+up <- cbind("Up-regulated",inferedRatesLEPMerged_yesChpNpP_multi$inferedRates[rownames(inferedRatesLEPMerged_yesChpNpP_multi$inferedRates)%in%OurGenesHighUp,"k6"])
+down <- cbind("Down-regulated",inferedRatesLEPMerged_yesChpNpP_multi$inferedRates[rownames(inferedRatesLEPMerged_yesChpNpP_multi$inferedRates)%in%OurGenesHighDown,"k6"])
+df <- data.frame(rbind(down,neutral,up))
+colnames(df) <- c("Class","Values")
+ 
+clustering <- rownames(df)
+names(clustering) <- df$Class
+ 
+GenesCharacterization(txdb,clustering=clustering,obj_name="LEP_REG",cgFeatures=list(cgUtr3,cgUtr5),entropyFeatures=list(entropyUtr3,entropyUtr5),width=12)
 
 ### Polysomal RNA yield in Harringtonine - Figure 5B
 df <- data.frame(cbind(c("UNT","UNT","HARR","HARR"),c(1,2,1,2),c(98/11,116.25/13,18/9,25/9)))
