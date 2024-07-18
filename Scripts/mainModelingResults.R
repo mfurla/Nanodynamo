@@ -750,7 +750,7 @@ ggsave("Polysomal.pdf",pl,width=4, height = 3)
 ### Premature Nucleoplasmic Export - Figure S39
 DifferentialHeatmapsPlotLEP <- DifferentialHeatmapsPlot(refObject=inferedRatesUntreatedMerged_nucleoplasmicPrematureExport
                              ,object=inferedRatesPlaBMerged_nucleoplasmicPrematureExport
-                             ,name="PlaBvsUntreated_NPE",n_clust=9,ylim=c(-2,2),ratesWeight=3)
+                             ,name="PlaBvsUntreated_NPE",n_clust=9,ylim=c(-2,2),ratesWeight=3,expressionFlag="MEAN")
 
 ### 5'TOP Factors - Figure S21
 mart <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
