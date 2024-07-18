@@ -1072,10 +1072,11 @@ OurList <- sapply(colnames(rbpMat),function(i){
 })
 OurList <- data.frame(do.call("rbind",OurList))
 
+set.seed(1)
 GSEA_PlaB <- lapply(SortedPlabEdges,function(i){
      GSEA(i,
           exponent = 1,
-          minGSSize = 20,
+          minGSSize = 10,
           maxGSSize = 500,
           eps = 1e-10,
           pvalueCutoff = 0.05,
@@ -1084,7 +1085,7 @@ GSEA_PlaB <- lapply(SortedPlabEdges,function(i){
           TERM2GENE = OurList,
           TERM2NAME = NA,
           verbose = TRUE,
-          seed = FALSE,
+          seed = TRUE,
           by = "fgsea"
           )
       })
@@ -1098,24 +1099,25 @@ OurList <- sapply(colnames(tfMat),function(i){
 })
 OurList <- data.frame(do.call("rbind",OurList))
 
-GSEA_PlaB <- lapply(SortedPlabEdges,function(i){
+set.seed(1)
+GSEA_PlaBTF <- lapply(SortedPlabEdges,function(i){
      GSEA(i,
           exponent = 1,
           minGSSize = 10,
           maxGSSize = 500,
           eps = 1e-10,
-          pvalueCutoff = 0.01,
+          pvalueCutoff = 0.05,
           pAdjustMethod = "BH",
           gson = NULL,
           TERM2GENE = OurList,
           TERM2NAME = NA,
           verbose = TRUE,
-          seed = FALSE,
+          seed = TRUE,
           by = "fgsea"
           )
       })
-names(GSEA_PlaB) <- names(SortedPlabEdges)
-GSEA_PlaB <- GSEA_PlaB[unlist(lapply(GSEA_PlaB,function(i){length(i$ID)!=0}))]
+names(GSEA_PlaBTF) <- names(SortedPlabEdges)
+GSEA_PlaBTF <- GSEA_PlaBTF[unlist(lapply(GSEA_PlaBTF,function(i){length(i$ID)!=0}))]
 
 ## Leptomycin B enrichments
 OurList <- sapply(colnames(rbpMat),function(i){
@@ -1124,6 +1126,7 @@ OurList <- sapply(colnames(rbpMat),function(i){
 })
 OurList <- data.frame(do.call("rbind",OurList))
 
+set.seed(1)
 GSEA_LepB <- lapply(SortedLepbEdges,function(i){
      GSEA(i,
           exponent = 1,
@@ -1136,7 +1139,7 @@ GSEA_LepB <- lapply(SortedLepbEdges,function(i){
           TERM2GENE = OurList,
           TERM2NAME = NA,
           verbose = TRUE,
-          seed = FALSE,
+          seed = TRUE,
           by = "fgsea"
           )
       })
@@ -1149,7 +1152,8 @@ OurList <- sapply(colnames(tfMat),function(i){
 })
 OurList <- data.frame(do.call("rbind",OurList))
 
-GSEA_LepB <- lapply(SortedLepbEdges,function(i){
+set.seed(1)
+GSEA_LepBTF <- lapply(SortedLepbEdges,function(i){
      GSEA(i,
           exponent = 1,
           minGSSize = 10,
@@ -1161,68 +1165,16 @@ GSEA_LepB <- lapply(SortedLepbEdges,function(i){
           TERM2GENE = OurList,
           TERM2NAME = NA,
           verbose = TRUE,
-          seed = FALSE,
+          seed = TRUE,
           by = "fgsea"
           )
       })
-names(GSEA_LepB) <- names(SortedLepbEdges)
-GSEA_LepB <- GSEA_LepB[unlist(lapply(GSEA_LepB,function(i){length(i$ID)!=0}))]
-
-## Harringtonine
-OurList <- sapply(colnames(rbpMat),function(i){
-  geni <- names(which(rbpMat[rownames(HarrEdges),i]!=0))
-  cbind(rep(i,length(geni)),geni)
-})
-OurList <- data.frame(do.call("rbind",OurList))
-
-GSEA_Harr<- lapply(SortedHarrEdges,function(i){
-     GSEA(i,
-          exponent = 1,
-          minGSSize = 10,
-          maxGSSize = 500,
-          eps = 1e-10,
-          pvalueCutoff = 0.05,
-          pAdjustMethod = "BH",
-          gson = NULL,
-          TERM2GENE = OurList,
-          TERM2NAME = NA,
-          verbose = TRUE,
-          seed = FALSE,
-          by = "fgsea"
-          )
-      })
-names(GSEA_Harr) <- names(SortedHarrEdges)
-GSEA_Harr<- GSEA_Harr[unlist(lapply(GSEA_Harr,function(i){length(i$ID)!=0}))]
-
-OurList <- sapply(colnames(tfMat),function(i){
-  geni <- names(which(tfMat[rownames(HarrEdges),i]!=0))
-  cbind(rep(i,length(geni)),geni)
-})
-OurList <- data.frame(do.call("rbind",OurList))
-
-GSEA_Harr<- lapply(SortedHarrEdges,function(i){
-     GSEA(i,
-          exponent = 1,
-          minGSSize = 10,
-          maxGSSize = 500,
-          eps = 1e-10,
-          pvalueCutoff = 0.05,
-          pAdjustMethod = "BH",
-          gson = NULL,
-          TERM2GENE = OurList,
-          TERM2NAME = NA,
-          verbose = TRUE,
-          seed = FALSE,
-          by = "fgsea"
-          )
-      })
-names(GSEA_Harr) <- names(SortedHarrEdges)
-GSEA_Harr <- GSEA_Harr[unlist(lapply(GSEA_Harr,function(i){length(i$ID)!=0}))]
+names(GSEA_LepBTF) <- names(SortedLepbEdges)
+GSEA_LepBTF <- GSEA_LepBTF[unlist(lapply(GSEA_LepBTF,function(i){length(i$ID)!=0}))]
 
 ## Enrichments barplots - Figure 6D and S36
-significant_PlaB = correlationSignificance(matTmp=PlaB,refMat=WT,method="s")[[3]] 
-significant_LepB = correlationSignificance(matTmp=LepB,refMat=WT,method="s")[[3]] 
-significant_Harr = correlationSignificance(matTmp=Harr,refMat=WT_NoPoly,method="s")[[3]] 
+significant_PlaB = correlationSignificance(matTmp=inferedRatesPlaBMerged_yesChpNpP_multi,refMat=inferedRatesUntreatedMerged_yesChpNpP_multi,method="s")[[3]] 
+significant_LepB = correlationSignificance(matTmp=inferedRatesLEPMerged_yesChpNpP_multi,refMat=inferedRatesUntreatedMerged_yesChpNpP_multi,method="s")[[3]] 
 
 PlotBars(rbpMat = GSEA_PlaB)
          ,tfMat = GSEA_PlaBTF)
@@ -1232,16 +1184,6 @@ PlotBars(rbpMat = GSEA_LepB)
          ,tfMat = GSEA_LepBTF)
          ,name="LepB"
          ,significant=significant_LepB)
-PlotBars(rbpMat = GSEA_Harr)
-         ,tfMat = GSEA_HarrTF)
-         ,name="Harr"
-         ,significant=significant_Harr)
-
-## Number of couplings per genes  
-NumberOfCoupling(plab_thr[[1]],"PlaB")
-NumberOfCoupling(lepb_thr[[1]],"LepB")
-NumberOfCoupling(harr_thr[[1]],"Harr")
-
 ### Overfit check
 OverfitFunctionTmp <- function(inferedData,expressionData,width=7,height=12,name="",lowSat=0,upSat=1,NpQ=NULL)
 {
