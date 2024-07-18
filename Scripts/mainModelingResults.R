@@ -498,10 +498,10 @@ sapply(colnames(df)[-1],function(i){
 })
 
 ### k1 vs k9 Log2FCs between Pladienolide B and Untreated cells - Figure S30
-commonGenes <- intersect(rownames(inferedRatesPlaBMerged_YesChpNpP_multi$inferedRates),rownames(inferedRatesUntreatedMerged_YesChpNpP_multi$inferedRates))
+commonGenes <- intersect(rownames(inferedRatesPlaBMerged_yesChpNpP_multi$inferedRates),rownames(inferedRatesUntreatedMerged_yesChpNpP_multi$inferedRates))
 
-ratesUntreated <- inferedRatesUntreatedMerged_YesChpNpP_multi$inferedRates[commonGenes,c("k1","k10")]
-ratesTreated <- inferedRatesPlaBMerged_YesChpNpP_multi$inferedRates[commonGenes,c("k1","k10")]
+ratesUntreated <- inferedRatesUntreatedMerged_yesChpNpP_multi$inferedRates[commonGenes,c("k1","k10")]
+ratesTreated <- inferedRatesPlaBMerged_yesChpNpP_multi$inferedRates[commonGenes,c("k1","k10")]
 ratesLog2FC <- log2(ratesTreated/ratesUntreated)
 
 smoothScatter(ratesLog2FC[,"k10"],ratesLog2FC[,"k1"],ylab="Synthesis [Log2 FC]",xlab="Polysomal Degradation [Log2 FC]")
@@ -1297,19 +1297,19 @@ OverfitFunctionTmp <- function(inferedData,expressionData,width=7,height=12,name
   outList
 }
 
-Real1 <- inferedRatesUntreatedMerged_YesChpNpP_multi$expressionData[[1]]
-Real2 <- inferedRatesUntreatedMerged_YesChpNpP_multi$expressionData[[2]]
+Real1 <- inferedRatesUntreatedMerged_yesChpNpP_multi$expressionData[[1]]
+Real2 <- inferedRatesUntreatedMerged_yesChpNpP_multi$expressionData[[2]]
 Real <- rbind(Real1,Real2)
-InfTmp <- inferedRatesUntreatedMerged_YesChpNpP_multi$inferedData[rownames(Real),]
+InfTmp <- inferedRatesUntreatedMerged_yesChpNpP_multi$inferedData[rownames(Real),]
 
 Real[Real==1e-10] <- NaN
 
 rownames(Real) <- rownames(InfTmp) <- 1:nrow(Real)
 
-corReal1vsReal2 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_YesChpNpP_multi$expressionData[[1]],expressionData=inferedRatesUntreated2_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
+corReal1vsReal2 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_yesChpNpP_multi$expressionData[[1]],expressionData=inferedRatesUntreated2_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
 corInfMvsReal <- OverfitFunctionTmp(inferedData=InfTmp,expressionData=Real,width=7,height=12,name="foe",lowSat=0,upSat=1)
-corInf1vsReal2 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_YesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated2_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
-corInf2vsReal1 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated2_YesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated1_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
+corInf1vsReal2 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_yesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated2_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
+corInf2vsReal1 <- OverfitFunctionTmp(inferedData=inferedRatesUntreated2_yesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated1_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1)
 
 corMatrix <- rbind(as.numeric(corInfMvsReal)
           ,as.numeric(corReal1vsReal2)
@@ -1318,10 +1318,10 @@ corMatrix <- rbind(as.numeric(corInfMvsReal)
 colnames(corMatrix) <- names(corInfMvsReal)
 
 ## Highly expressed
-corReal1vsReal2_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_YesChpNpP_multi$expressionData[[1]],expressionData=inferedRatesUntreated2_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
+corReal1vsReal2_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_yesChpNpP_multi$expressionData[[1]],expressionData=inferedRatesUntreated2_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
 corInfMvsReal_HE <- OverfitFunctionTmp(inferedData=InfTmp,expressionData=Real,width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
-corInf1vsReal2_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_YesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated2_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
-corInf2vsReal1_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated2_YesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated1_YesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
+corInf1vsReal2_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated1_yesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated2_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
+corInf2vsReal1_HE <- OverfitFunctionTmp(inferedData=inferedRatesUntreated2_yesChpNpP_multi$inferedData,expressionData=inferedRatesUntreated1_yesChpNpP_multi$expressionData[[1]],width=7,height=12,name="foe",lowSat=0,upSat=1,NpQ=0.9)
 
 corMatrix_HE <- rbind(as.numeric(corInfMvsReal_HE)
           ,as.numeric(corReal1vsReal2_HE)
@@ -1478,8 +1478,8 @@ dev.off()
 ### Genes modulated in k6 vs Differential expressions
 j=2.5 # Fold Change
 
-upRegulatedGenesTmp <- names(which(log2(inferedRatesLepBMerged_YesChpNpP_multi$inferedRates[commonGenesTmp,"k6"]/inferedRatesUntreatedMerged_YesChpNpP_multi$inferedRates[commonGenesTmp,"k6"])>=log2(j)))
-downRegulatedGenesTmp <- names(which(log2(inferedRatesLepBMerged_YesChpNpP_multi$inferedRates[commonGenesTmp,"k6"]/inferedRatesUntreatedMerged_YesChpNpP_multi$inferedRates[commonGenesTmp,"k6"])<=(-log2(j))))
+upRegulatedGenesTmp <- names(which(log2(inferedRatesLepBMerged_yesChpNpP_multi$inferedRates[commonGenesTmp,"k6"]/inferedRatesUntreatedMerged_yesChpNpP_multi$inferedRates[commonGenesTmp,"k6"])>=log2(j)))
+downRegulatedGenesTmp <- names(which(log2(inferedRatesLepBMerged_yesChpNpP_multi$inferedRates[commonGenesTmp,"k6"]/inferedRatesUntreatedMerged_yesChpNpP_multi$inferedRates[commonGenesTmp,"k6"])<=(-log2(j))))
 notRegulatedGenesTmp <- setdiff(commonGenesTmp,c(upRegulatedGenesTmp,downRegulatedGenesTmp))
 
 i=2 # Number of modulated conditions
