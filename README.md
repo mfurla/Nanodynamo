@@ -37,7 +37,7 @@ In the _Results_ folder we have collected:
 - Rates and gene expression levels estimated with Nanodynamo for the Untreated condition (Untreated),
 - Rates and gene expression levels estimated with Nanodynamo for the Pladienolide B treated condition (PladienolideB),
 - Rates and gene expression levels estimated with Nanodynamo for the Leptomycin B treated condition (LeptomycinB),
-- Rates and gene expression levels estimated with Nanodynamo for the Harringtonin condition (Harringtonin),
+- Rates and gene expression levels estimated with Nanodynamo for the Harringtonine condition (Harringtonine),
 - Simulated data and corresponding inferred rates.
 
 In the _Files_ folder we have collected:
