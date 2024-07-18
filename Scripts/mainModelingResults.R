@@ -491,7 +491,7 @@ functionTmp(OurGenesHighDownSymbol,name="LEPvsUntreated_Extreme_Down",n_clust=2,
 functionTmp(OurGenesHighUpSymbol,name="LEPvsUntreated_Extreme_Up",n_clust=2,show_rownames=TRUE)
 
 ### Untreated rates in Pladienolide B derived cluster - Figure 3H
-df <- data.frame(cbind(DifferentialHeatmapsPlotPlaB,inferedRatesUntreatedMerged_yesChpNpP_multi[names(DifferentialHeatmapsPlotPlaB),][,1:5]))
+df <- data.frame(cbind(DifferentialHeatmapsPlotPlaB,inferedRatesUntreatedMerged_yesChpNpP_multi$inferedRates[names(DifferentialHeatmapsPlotPlaB),][,1:5]))
 par(mfrow=c(1,5))
 sapply(colnames(df)[-1],function(i){
   boxplot(as.numeric(df[[i]])~df$ord,las=2,main=i,notch=TRUE,ylab="Log10(rates)",outline=FALSE)
