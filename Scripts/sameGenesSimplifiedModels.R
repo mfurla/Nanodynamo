@@ -76,7 +76,7 @@ inferedRatesUntreatedMerged_yesChpNpNoP_multi <- inferRates(expressionData=expre
 														   ,lambda=0.05 # Regularization strength.
 														   ,excludeSpecies=NULL # List of species to be excluded from the cost function.
 														   ,parFixed=NULL) # List of parameters to be excluded from the optimization.
-saveRDS(inferedRatesUntreatedMerged_yesChpNpNoP_multi,"inferedRatesUntreatedMerged_yesChpNpNoP_multi.rds")
+saveRDS(inferedRatesUntreatedMerged_yesChpNpNoP_multi,"inferedRatesUntreatedMerged_YesChpNpNoP_multi.rds")
 
 inferedRatesUntreatedMerged_yesChpPNoNp_multi <- inferRates(expressionData=expressionLevels_yesChpPNoNp # Expression data of the genes to be modeled.
 														   ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
@@ -93,7 +93,7 @@ inferedRatesUntreatedMerged_yesChpPNoNp_multi <- inferRates(expressionData=expre
 														   ,lambda=0.05 # Regularization strength.
 														   ,excludeSpecies=NULL # List of species to be excluded from the cost function.
 														   ,parFixed=NULL) # List of parameters to be excluded from the optimization.
-saveRDS(inferedRatesUntreatedMerged_yesChpPNoNp_multi,"inferedRatesUntreatedMerged_yesChpPNoNp_multi.rds")
+saveRDS(inferedRatesUntreatedMerged_yesChpPNoNp_multi,"inferedRatesUntreatedMerged_YesChpPNoNp_multi.rds")
 
 inferedRatesUntreatedMerged_yesChpNoNpP_multi <- inferRates(expressionData=expressionLevels_yesChpNoNpP # Expression data of the genes to be modeled.
 														   ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
@@ -110,7 +110,7 @@ inferedRatesUntreatedMerged_yesChpNoNpP_multi <- inferRates(expressionData=expre
 														   ,lambda=0.05 # Regularization strength.
 														   ,excludeSpecies=NULL # List of species to be excluded from the cost function.
 														   ,parFixed=NULL) # List of parameters to be excluded from the optimization.
-saveRDS(inferedRatesUntreatedMerged_yesChpNoNpP_multi,"inferedRatesUntreatedMerged_yesChpNoNpP_multi.rds")
+saveRDS(inferedRatesUntreatedMerged_yesChpNoNpP_multi,"inferedRatesUntreatedMerged_YesChpNoNpP_multi.rds")
 
 inferedRatesUntreatedMerged_yesPNoChp_multi <- inferRates(expressionData=expressionLevels_yesPNoChp # Expression data of the genes to be modeled.
 														 ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
@@ -127,7 +127,7 @@ inferedRatesUntreatedMerged_yesPNoChp_multi <- inferRates(expressionData=express
 														 ,lambda=0.05 # Regularization strength.
 														 ,excludeSpecies=NULL # List of species to be excluded from the cost function.
 														 ,parFixed=NULL) # List of parameters to be excluded from the optimization.
-saveRDS(inferedRatesUntreatedMerged_yesPNoChp_multi,"inferedRatesUntreatedMerged_yesPNoChp_multi.rds")
+saveRDS(inferedRatesUntreatedMerged_yesPNoChp_multi,"inferedRatesUntreatedMerged_YesPNoChp_multi.rds")
 
 inferedRatesUntreatedMerged_noChpP_multi <- inferRates(expressionData=expressionLevels_noChpP # Expression data of the genes to be modeled.
 													  ,expressionDataDev=NULL # Standard deviations of the genes to be modeled.
@@ -144,4 +144,4 @@ inferedRatesUntreatedMerged_noChpP_multi <- inferRates(expressionData=expression
 													  ,lambda=0.05 # Regularization strength.
 													  ,excludeSpecies=NULL # List of species to be excluded from the cost function.
 													  ,parFixed=NULL) # List of parameters to be excluded from the optimization.
-saveRDS(inferedRatesUntreatedMerged_noChpP_multi,"inferedRatesUntreatedMerged_noChpP_multi.rds")
+saveRDS(inferedRatesUntreatedMerged_noChpP_multi,"inferedRatesUntreatedMerged_NoChpP_multi.rds")
