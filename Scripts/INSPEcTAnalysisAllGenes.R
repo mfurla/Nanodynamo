@@ -57,11 +57,11 @@ INSPEcT_degradation <- log10(ratesFirstGuess(nascentInspObj,"degradation")[,"deg
 ### Comparisons with Nanodynamo
 ## Same genes different models
 inferedRatesUntreatedMerged_yesChpNpP<-readRDS("/path/to/Results/Untreated/firstRun_FullModel/inferedRatesUntreatedMerged_YesChpNpP_multi.rds")
-inferedRatesUntreatedMerged_yesChpNpNoP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_yesChpNpNoP_multi.rds")
-inferedRatesUntreatedMerged_yesChpPNoNp<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_yesChpPNoNp_multi.rds")
-inferedRatesUntreatedMerged_yesChpNoNpP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_yesChpNoNpP_multi.rds")
-inferedRatesUntreatedMerged_yesPNoChp<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_yesPNoChp_multi.rds")
-inferedRatesUntreatedMerged_noChpP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_noChpP_multi.rds")
+inferedRatesUntreatedMerged_yesChpNpNoP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_YesChpNpNoP_multi.rds")
+inferedRatesUntreatedMerged_yesChpPNoNp<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_YesChpPNoNp_multi.rds")
+inferedRatesUntreatedMerged_yesChpNoNpP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_YesChpNoNpP_multi.rds")
+inferedRatesUntreatedMerged_yesPNoChp<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_YesPNoChp_multi.rds")
+inferedRatesUntreatedMerged_noChpP<-readRDS("/path/to/Results/Untreated/thirdRun_sameGenesAllModels/inferedRatesUntreatedMerged_NoChpP_multi.rds")
 
 sameGenesSimplerModelsResults <- lapply(paste0("k",c(1,3,6,8)),function(i)
 {
